@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iqra Cosmetic & Jewellers - Jalna</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #fdfaf6;
+      color: #333;
+    }
+    
+    /* Top Header */
+    header {
+      background: linear-gradient(135deg, #880e4f, #d81b60);
+      color: #fff;
+      text-align: center;
+      padding: 40px 20px 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: #fff8e1;
+    }
+    .badge {
+      display: inline-block;
+      background: #ffb300;
+      color: #000;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    header p.subtext {
+      font-size: 14px;
+      opacity: 0.95;
+      line-height: 1.5;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .section-header h2 {
+      font-size: 24px;
+      color: #880e4f;
+      display: inline-block;
+      border-bottom: 3px solid #ffb300;
+      padding-bottom: 6px;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 22px;
+    }
+    .product-card {
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      border: 1px solid #f0e6e6;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background-color: #f7f7f7;
+    }
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+    .product-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    .product-price {
+      font-size: 21px;
+      font-weight: 800;
+      color: #d81b60;
+      margin-bottom: 15px;
+    }
+    .order-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #25d366;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .order-btn:hover {
+      background: #1ebc59;
+    }
+
+    /* Info Bar / Contact */
+    .info-bar {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 25px 20px;
+      margin-top: 40px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      border-left: 5px solid #d81b60;
+    }
+    .info-bar h3 {
+      color: #880e4f;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .info-bar p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #555;
+    }
+    .contact-link {
+      color: #d81b60;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 40px;
+      background: #212121;
+      color: #bbb;
+      font-size: 13px;
+    }
+    footer a {
+      color: #ffb300;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <h1>Iqra Cosmetic & Jewellers</h1>
+    <span class="badge">Wholesale & Retail</span>
+    <p class="subtext">
+      📍 Dukhi Nagar, Maulana Azad Function Hall Road, Jalna, Maharashtra<br>
+      📞 Contact: +91 9890906111
+    </p>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="section-header">
+      <h2>Products & Daily Rates</h2>
+    </div>
+
+    <!-- Live Products List -->
+    <div id="productGrid" class="product-grid">
+      <p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #777;">
+        Products load ho rahe hain... kripya prateeksha karein.
+      </p>
+    </div>
+
+    <!-- Shop Details Card -->
+    <div class="info-bar">
+      <h3>Dukaan Par Padharein</h3>
+      <p>
+        <strong>Address:</strong> Dukhi Nagar, Maulana Azad Function Hall Road, Jalna (Maharashtra)<br>
+        <strong>Deals in:</strong> Cosmetic items, Latest Jewellery sets, Parlour accessories (Wholesale & Retail)<br>
+        <strong>Phone / WhatsApp:</strong> <a class="contact-link" href="https://wa.me/919890906111">+91 9890906111</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 Iqra Cosmetic & Jewellers. All rights reserved.</p>
+    <p style="margin-top: 5px;">Designed & Developed by Altamash</p>
+  </footer>
+
+  <script>
+    // -------------------------------------------------------------
+    // 1. Apni Firebase Project Config Yahan Replace Karein
+    // -------------------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const productGrid = document.getElementById("productGrid");
+
+    // Live Database se Products load karna
+    db.collection("products").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+      productGrid.innerHTML = "";
+      if (snapshot.empty) {
+        productGrid.innerHTML = "<p style='text-align:center; grid-column: 1/-1; padding: 30px; font-weight:500;'>Abhi koi product upload nahi hai.</p>";
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const item = doc.data();
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        // Direct WhatsApp order link with custom product message
+        const waText = encodeURIComponent(`Namaste Iqra Cosmetic & Jewellers! Mujhe aapki website par ye product pasand aaya hai:\n\n*Product:* ${item.name}\n*Rate:* ₹${item.price}\n\nKripya iski detail aur availability batayein.`);
+        const waUrl = `https://wa.me/919890906111?text=${waText}`;
+
+        card.innerHTML = `
+          <img src="${item.imageUrl}" alt="${item.name}">
+          <div class="card-body">
+            <div>
+              <div class="product-name">${item.name}</div>
+              <div class="product-price">₹${item.price}</div>
+            </div>
+            <a href="${waUrl}" target="_blank" class="order-btn">
+              <span>Order on WhatsApp</span>
+            </a>
+          </div>
+        `;
+        productGrid.appendChild(card);
+      });
+    }, (error) => {
+      productGrid.innerHTML = "<p style='text-align:center; grid-column: 1/-1; color:red;'>Data load karne me problem aayi: " + error.message + "</p>";
+    });
+  </script>
+</body>
+  </html>
