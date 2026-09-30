@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Iqra Cosmetic & Jewellers</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #f4f6fa;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .box {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #880e4f;
+      font-size: 22px;
+    }
+    label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+      display: block;
+      margin-top: 14px;
+    }
+    input[type="text"], input[type="number"], input[type="password"], input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      background: #d81b60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 22px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #ad1457;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .hidden {
+      display: none;
+    }
+    #msg {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .preview-box img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+    .logout-btn {
+      background: #607d8b;
+      margin-top: 10px;
+    }
+  </style>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+
+  <!-- Screen 1: Password Lock -->
+  <div class="box" id="lockBox">
+    <h2>Dukaan Maalik Login</h2>
+    <label>Admin Password Dalein</label>
+    <input type="password" id="passInput" placeholder="Password yahan likhein">
+    <button onclick="checkPin()">Login Karein</button>
+    <p id="lockError" style="color: red; margin-top: 12px; text-align: center; display: none;">Galat password! Dobara koshish karein.</p>
+  </div>
+
+  <!-- Screen 2: Product & Rate Upload Form -->
+  <div class="box hidden" id="uploadBox">
+    <h2>Naya Product Upload</h2>
+
+    <label>Product Ka Naam</label>
+    <input type="text" id="pName" placeholder="Jaise: Bridal Jewellery Set, Lip Gloss...">
+
+    <label>Rate / Keemat (₹ me)</label>
+    <input type="number" id="pPrice" placeholder="Jaise: 350">
+
+    <label>Product Ki Photo Select Karein</label>
+    <input type="file" id="pFile" accept="image/*" onchange="showPreview()">
+
+    <div class="preview-box">
+      <img id="imgPreview" src="#" alt="Selected Image">
+    </div>
+
+    <button id="uploadBtn" onclick="saveProductData()">Upload Product & Rate</button>
+    <p id="msg"></p>
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // Settings:
+    // -------------------------------------------------------------
+    // 1. Dukaan maalik ke liye password yahan set karein:
+    const OWNER_PIN = "iqra786"; 
+
+    // 2. ImgBB Free API Key yahan dalein (api.imgbb.com se lein):
+    const IMGBB_API_KEY = "YAHAN_APNI_IMGBB_API_KEY_DALEIN";
+
+    // 3. Wahi same Firebase details yahan bhi paste karein:
+    const firebaseConfig = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Password verification
+    function checkPin() {
+      const pin = document.getElementById("passInput").value;
+      if (pin === OWNER_PIN) {
+        document.getElementById("lockBox").classList.add("hidden");
+        document.getElementById("uploadBox").classList.remove("hidden");
+      } else {
+        document.getElementById("lockError").style.display = "block";
+      }
+    }
+
+    // Image select karne par screen par dikhana
+    function showPreview() {
+      const file = document.getElementById("pFile").files[0];
+      const preview = document.getElementById("imgPreview");
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+      }
+    }
+
+    // Photo aur Rate Firebase par save karne ka process
+    async function saveProductData() {
+      const name = document.getElementById("pName").value.trim();
+      const price = document.getElementById("pPrice").value.trim();
+      const file = document.getElementById("pFile").files[0];
+      const msg = document.getElementById("msg");
+      const btn = document.getElementById("uploadBtn");
+
+      if (!name || !price || !file) {
+        msg.style.color = "red";
+        msg.innerText = "Kripya Product Name, Rate aur Photo teeno bharein!";
+        return;
+      }
+
+      btn.disabled = true;
+      msg.style.color = "#d81b60";
+      msg.innerText = "Photo upload ho rahi hai... kripya ruken.";
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        // Step 1: Photo ko ImgBB par upload karna
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          msg.innerText = "Database me save ho raha hai...";
+
+          // Step 2: Firestore Database me Save karna
+          await db.collection("products").add({
+            name: name,
+            price: Number(price),
+            imageUrl: data.data.url,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          msg.style.color = "green";
+          msg.innerText = "✅ Product aur Rate safaltapoorvak upload ho gaya!";
+
+          // Form clear karna
+          document.getElementById("pName").value = "";
+          document.getElementById("pPrice").value = "";
+          document.getElementById("pFile").value = "";
+          document.getElementById("imgPreview").style.display = "none";
+        } else {
+          msg.style.color = "red";
+          msg.innerText = "Photo upload fail: " + (data.error ? data.error.message : "Error");
+        }
+      } catch (err) {
+        msg.style.color = "red";
+        msg.innerText = "Error: " + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function logout() {
+      document.getElementById("passInput").value = "";
+      document.getElementById("uploadBox").classList.add("hidden");
+      document.getElementById("lockBox").classList.remove("hidden");
+      document.getElementById("msg").innerText = "";
+    }
+  </script>
+</body>
+</html><script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCYmJbGs8JXCdVz9lRv9RCcD6pqJY3H5ko",
+    authDomain: "iqra-cosmetic-96425.firebaseapp.com",
+    projectId: "iqra-cosmetic-96425",
+    storageBucket: "iqra-cosmetic-96425.firebasestorage.app",
+    messagingSenderId: "925700458451",
+    appId: "1:925700458451:web:04cb69156057d0ded6d126",
+    measurementId: "G-V4EYH3VWZ3"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
